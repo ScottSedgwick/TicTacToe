@@ -82,8 +82,6 @@ drawGame g = B.withBorderStyle BS.unicodeBold
 drawRow :: Game -> [Posn] -> B.Widget AppName
 drawRow g ps = B.str (' ' : intercalate (' ' : vbar ++ " ") (map (\p -> show (playerAt p g)) ps))
 
--- Redo this with playerAt and don't use show.
-
 handleEvent :: Game -> B.BrickEvent AppName AppEvents -> B.EventM AppName (B.Next Game)
 handleEvent g e = 
   case e of
