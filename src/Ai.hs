@@ -39,8 +39,8 @@ maxState = ScoreState (State [], 10)
 --
 -- Examples:
 --
--- >>> getMove (State [(NW, Cross), (N,Cross), (NE,Cross)]) (State [(SE,Nought),(NW, Cross), (N,Cross), (NE,Cross)])
--- (SE,Nought)
+-- >>> getMove (ScoreState (State [(NW, Cross), (N,Cross), (NE,Cross)], 0)) (ScoreState (State [(SE,Nought),(NW, Cross), (N,Cross), (NE,Cross)], 0))
+-- (SE,O)
 getMove :: ScoreState -> ScoreState -> Move
 getMove (ScoreState (State ix, _)) (ScoreState (State rx, _)) = head (drop (length ix) (reverse rx))
 
