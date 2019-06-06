@@ -14,9 +14,12 @@ I have attempted to fulfil all the requirements, with this exception - rather th
 module TicLib 
     ( FindPlayerAt
     , Game (..)
+    , Mark (..)
+    , Move
     , Playable (Playable)
     , Played (Played)
     , Posn (..)
+    , State (..)
     , initState
     , isDraw
     , move
@@ -45,11 +48,10 @@ class FindWhoWon a where
 
 -- | Represents whose turn it is.
 data Mark = None | Nought | Cross deriving (Eq)
-
 instance Show Mark where
-    show None   = " "
-    show Nought = "O"
-    show Cross  = "X"
+  show None   = " "
+  show Nought = "O"
+  show Cross  = "X"
 
 -- | A type that enumerates all the places on the board.
 data Posn = NW | N | NE
@@ -57,10 +59,12 @@ data Posn = NW | N | NE
           | SW | S | SE
           deriving (Eq, Ord, Enum, Show)
 
+-- | Represents a single move (where, and who)
 type Move = (Posn, Mark)
 
+-- | Represents the state of the board - an ordered collection of `Move`s
 newtype State = State [Move]
-              deriving Eq
+              deriving (Show, Eq)
 
 instance NextMove State where
     next (State [])             = Cross
@@ -75,20 +79,6 @@ instance FindPlayerAt State where
     playerAt p (State xs) = case find (\(p',_) -> p' == p) xs of
                                 Nothing      -> None
                                 (Just (_,m)) -> m
-
-instance Show State where
-    show (State xs) = showMarks (map f [NW .. SE])
-        where
-            f p = case find (\(p',_) -> p == p') xs of
-                    Nothing  -> None
-                    (Just (_,m)) -> m
-
-showMarks :: [Mark] -> String
-showMarks xs = intercalate "\n---+---+---\n" 
-                [ ' ' : intercalate " | " (map show (take 3 xs))
-                , ' ' : intercalate " | " (map show (take 3 (drop 3 xs)))
-                , ' ' : intercalate " | " (map show (take 3 (drop 6 xs)))
-                ]
 
 conc :: Move -> State -> State
 conc x (State xs) = State (x:xs)
@@ -109,10 +99,6 @@ instance FindWhoWon Game where
     whoWon (ToPlay x)   = whoWon x
     whoWon (FromPlay x) = whoWon x
 
-instance Show Game where
-    show (ToPlay x)   = show x
-    show (FromPlay x) = show x
-
 -- | The initial state of a new game.
 initState :: Game
 initState = ToPlay EmptyBoard
@@ -125,7 +111,7 @@ isDraw _                    = False
 -- | Represents a game board that can still have moves made on it.
 data Playable = EmptyBoard
               | Playable State
-              deriving Eq
+              deriving (Eq, Show)
 
 instance PositionOccupied Playable where
     positionIsOccupied _ EmptyBoard   = False
@@ -142,10 +128,6 @@ instance FindPlayerAt Playable where
 instance FindWhoWon Playable where
     whoWon _ = None
 
-instance Show Playable where
-    show EmptyBoard    = "\n" ++ showMarks (replicate 9 None)
-    show (Playable xs) = "\n" ++ show xs
-
 -- | Represents a game board that has had a move made.
 -- | The Played constructor represents an instance of this type that can still have more moves made.
 data Played = Played State
@@ -160,11 +142,6 @@ instance FindPlayerAt Played where
     playerAt p (Played xs) = playerAt p xs
     playerAt p (Won    xs) = playerAt p xs
     playerAt p (Drawn  xs) = playerAt p xs
-
-instance Show Played where
-    show (Played xs) = "\n"            ++ show xs
-    show (Drawn  xs) = "It's a Tie.\n" ++ show xs
-    show (Won    xs) = "Winner!\n"     ++ show xs
 
 instance FindWhoWon Played where
     whoWon (Played _)              = None
@@ -188,14 +165,9 @@ move (p, Playable s) | positionIsOccupied p s = Played s
 
 winningMoves :: [[Posn]]
 winningMoves = 
-    [ [ NW, N, NE ]
-    , [  W, C,  E ]
-    , [ SW, S, SE ]
-    , [ NW, W, SW ]
-    , [  N, C,  S ]
-    , [ NE, E, SE ]
-    , [ NW, C, SE ]
-    , [ NE, C, SW ]
+    [ [ NW, N, NE ], [  W, C,  E ], [ SW, S, SE ]   -- Rows
+    , [ NW, W, SW ], [  N, C,  S ], [ NE, E, SE ]   -- Columns
+    , [ NW, C, SE ], [ NE, C, SW ]                  -- Diagonals
     ]
 
 containsAll :: Eq a => [a] -> [a] -> Bool
@@ -216,13 +188,6 @@ hasWon (State xs) = hasWon' (map fst (filter (\(_,m') -> m == m') xs))
 
 isFull :: State -> Bool
 isFull (State xs) = length xs >= 9
-
--- We already have:
--- Arbitrary a => Arbitrary [a]
--- (Arbitrary a, Arbitrary b) => Arbitrary (a, b)
-
--- elements $ map (\m -> State [m]) [(NW, Nought), (N, Nought), (NE, Nought), (W, Nought), (C, Nought), (E, Nought), (SW, Nought), (S, Nought), (SE, Nought), (NW, Cross), (N, Cross), (NE, Cross), (W, Cross), (C, Cross), (E, Cross), (SW, Cross), (S, Cross), (SE, Cross)]
-
 
 -- $setup
 -- >>> import Test.QuickCheck

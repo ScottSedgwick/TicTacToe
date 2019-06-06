@@ -38,9 +38,9 @@ drawUI g = [ B.hBox [drawInstructions, drawGame g ] ]
 
 drawInstructions :: B.Widget AppName
 drawInstructions = B.withBorderStyle BS.unicodeBold
-                 $ BB.borderWithLabel (B.str " Instructions ")
-                 $ B.padLeftRight 1
-                 $ B.vBox [ B.str ("Moves:  q " ++ vbar ++ " w " ++ vbar ++ " e ")
+                  $ BB.borderWithLabel (B.str " Instructions ")
+                  $ B.padLeftRight 1
+                  $ B.vBox [ B.str ("Moves:  q " ++ vbar ++ " w " ++ vbar ++ " e ")
                           , B.str ("       " ++ hline)
                           , B.str ("        a " ++ vbar ++ " s " ++ vbar ++ " d ")
                           , B.str ("       " ++ hline)
@@ -61,9 +61,9 @@ vbar = "\x2503"
 
 drawGame :: Game -> B.Widget AppName
 drawGame g = B.withBorderStyle BS.unicodeBold
-           $ BB.borderWithLabel (B.str winMsg)
-           $ B.padAll 1
-           $ B.vBox [ drawRow g [NW, N, NE]
+            $ BB.borderWithLabel (B.str winMsg)
+            $ B.padAll 1
+            $ B.vBox [ drawRow g [NW, N, NE]
                     , B.str hline
                     , drawRow g [W, C, E]
                     , B.str hline
@@ -72,11 +72,11 @@ drawGame g = B.withBorderStyle BS.unicodeBold
                     ]
   where
     winMsg = if isDraw g 
-             then " It's a Draw! "
-             else let s = show (whoWon g) 
+              then " It's a Draw! "
+              else let s = show (whoWon g) 
                   in if s == " " 
-                     then " Game "
-                     else " " ++ s ++ "'s won! "
+                      then " Game "
+                      else " " ++ s ++ "'s won! "
 
 
 drawRow :: Game -> [Posn] -> B.Widget AppName
@@ -112,3 +112,4 @@ doTakeBack g                     = g
 
 main :: IO ()
 main = void $ B.defaultMain app initState
+  

@@ -1,5 +1,5 @@
-# Changelog for tic
+# Revision history for tic
 
-## Unreleased changes
+## 0.1.0.0 -- YYYY-mm-dd
 
-- Initial implementation
+* First version. Released on an unsuspecting world.

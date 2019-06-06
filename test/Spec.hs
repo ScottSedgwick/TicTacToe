@@ -1,10 +1,10 @@
 import TicLib
+import Control.Monad (forM_)
 import System.FilePath.Glob (glob)
 import Test.DocTest (doctest)
 
 main :: IO ()
 main = do
-  putStrLn "\nSrc Tests:"
-  glob "src/**/*.hs" >>= doctest
-  putStrLn "App Tests:"
-  glob "app/**/*.hs" >>= doctest
+  files <- (++) <$> glob "src/**/*.hs" 
+                <*> glob "app/**/*.hs"
+  forM_ files $ \f -> doctest [f]

@@ -1,0 +1,45 @@
+cabal-version:          2.4
+name:                   tic
+version:                0.1.0.0
+synopsis:               Implementation of TicTacToe from Tony Morris' FP course.
+homepage:               https://github.com/ScottSedgwick/TicTacToe
+license:                BSD-3-Clause
+license-file:           LICENSE
+author:                 Scott Sedgwick
+maintainer:             ssedgwick@cochlear.com
+category:               Game
+extra-source-files:     CHANGELOG.md
+
+
+library
+  exposed-modules:      TicLib
+                      , Ai
+  build-depends:        base ^>=4.12.0.0
+                      , containers
+  hs-source-dirs:       src
+  default-language:     Haskell2010
+
+
+executable ticx
+  main-is:              Main.hs
+  build-depends:        base ^>=4.12.0.0
+                      , brick
+                      , containers
+                      , tic
+                      , vty
+  hs-source-dirs:       app
+  ghc-options:          -threaded -rtsopts -with-rtsopts=-N
+  default-language:     Haskell2010
+
+
+test-suite tic-test
+  type:                 exitcode-stdio-1.0
+  main-is:              Spec.hs
+  hs-source-dirs:       test
+  ghc-options:          -threaded -rtsopts -with-rtsopts=-N
+  build-depends:        base >=4.7 && <5
+                      , containers
+                      , doctest
+                      , Glob
+                      , tic
+  default-language:     Haskell2010
